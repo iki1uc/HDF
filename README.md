@@ -1,28 +1,58 @@
-# ANKER – Stabilisationsachse · iki1uc
+# HDF · iki1uc
 
-## Zweck
-ANKER ist die Stabilisationsachse des iki1uc‑Systems.
-Es hält die Achsen IQ, QI, EVO, UPD, UPG, BIOS und CALC im korrekten Verhältnis.
+Dieses Repository bildet die HDF‑Operationsachse für das gesamte iki1uc‑System.
 
 ## Struktur
-- NAME: ANKER
-- ID: A01
-- Station: S01
-- Dimension: D4
-- Modus: erabel (neutral, operation möglich)
 
-## Rolle
-ANKER stabilisiert, ohne selbst aktiv zu berechnen oder zu steuern.
-Es ist die neutrale Achse zwischen AXI, 6d und API.
+### 9.room
+Grundmatrix 9×9 (d–w), Basis für die 81‑Matrix.
 
-## Bindungen
+### COMMANDS.room
+Zuordnung der 9 Hauptbefehle:
+d → TMP.1  
+e → TMP.2  
+…  
+w → TMP.9
+
+### 81.room
+Vollständige 81‑Matrix:
+d1–d9 → TMP.1.1–TMP.1.9  
+…  
+w1–w9 → TMP.9.1–TMP.9.9
+
+### one.room
+Beispiel‑Aufträge:
+#SLIDE → SLIDE.hdf  
+#HDFRESPO → HDFRESPO.hdf  
+#ID → ID.hdf
+
+### tmp.hdf.resolver.js
+Resolver für alle HDF‑Dateien im D:/tmp‑Knotenpunkt.
+
+## Zweck
+
+HDF bildet die operative Achse für:
+
+- SLIDE
+- ID
+- RESPO
 - AXI
-- 6d
-- 360
-- 100
-- 213 (REAL)
-- API
+- RUN8
+- TEM
+- D:/tmp als Knotenpunkt
 
-## Status
-STATE = STABIL  
-READY = 100%
+## Index
+
+Die neue `index.html` zeigt:
+
+- 81‑Matrix
+- TMP‑Resolver‑Status
+- TMP‑Knotenpunkt
+
+## ID
+
+Die neue `ID.html` zeigt:
+
+- ID‑Modus
+- ID‑HDF‑Status
+
