@@ -2,62 +2,155 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<title>HDF · 81‑Matrix · iki1uc</title>
+<title>HDF · ROOT INDEX · iki1uc</title>
 
 <style>
-body { background:#000; color:#0f0; font-family:monospace; padding:40px; }
-h1 { color:#6cf; letter-spacing:4px; margin-bottom:30px; }
-.block { background:#111; border:1px solid #333; padding:25px; margin-bottom:30px; border-radius:8px; }
-.title { font-size:22px; color:#6cf; margin-bottom:10px; }
-pre { background:#000; border-left:3px solid #6cf; padding:15px; margin-top:10px; white-space:pre-wrap; }
-a { color:#6cf; text-decoration:none; font-weight:bold; }
+    body { background:#0a0a0a; color:#e0e0e0; font-family:Consolas, monospace; padding:20px; }
+    h1 { color:#00e0ff; }
+    .block { background:#111; padding:15px; border-left:4px solid #00e0ff; margin-bottom:20px; }
+    pre { white-space:pre-wrap; }
 </style>
 
-<script src="tmp.hdf.resolver.js"></script>
+<script type="module" src="../SLIDE/geom.js"></script>
+<script type="module" src="../SLIDE/transform.js"></script>
+<script type="module" src="../SLIDE/full.js"></script>
+<script type="module" src="../TOR/VEC.tor"></script>
+<script type="module" src="../TOR/TOR.respo.js"></script>
+<script type="module" src="../TOR/VERIFY.js"></script>
+<script type="module" src="../TOR/Vector.run.js"></script>
+<script type="module" src="../STATION/live-core.js"></script>
+<script type="module" src="../STATION/live-pulse.js"></script>
+<script type="module" src="../STATION/live-sync.js"></script>
+<script type="module" src="../STATION/live-router.js"></script>
+<script type="module" src="../STATION/live-websocket.js"></script>
+<script type="module" src="./tmp.hdf.resolver.js"></script>
 
 </head>
+
 <body>
 
-<h1>HDF · 81‑Matrix · iki1uc</h1>
+<h1>HDF · ROOT INDEX</h1>
 
 <div class="block">
-    <div class="title">81‑Matrix</div>
-    <pre id="matrix"></pre>
+    <h2>HDF · 81.room</h2>
+    <pre id="room81"></pre>
 </div>
 
 <div class="block">
-    <div class="title">TMP‑Resolver</div>
+    <h2>HDF · 9.room</h2>
+    <pre id="room9"></pre>
+</div>
+
+<div class="block">
+    <h2>HDF · COMMANDS.room</h2>
+    <pre id="commands"></pre>
+</div>
+
+<div class="block">
+    <h2>HDF · one.room</h2>
+    <pre id="one"></pre>
+</div>
+
+<div class="block">
+    <h2>Geometrie</h2>
+    <pre id="geom"></pre>
+</div>
+
+<div class="block">
+    <h2>SLIDE · Engine</h2>
+    <pre id="slide"></pre>
+</div>
+
+<div class="block">
+    <h2>TOR · Vector Engine</h2>
+    <pre id="vec"></pre>
+</div>
+
+<div class="block">
+    <h2>TOR · Respo</h2>
+    <pre id="respo"></pre>
+</div>
+
+<div class="block">
+    <h2>TOR · Verify</h2>
+    <pre id="verify"></pre>
+</div>
+
+<div class="block">
+    <h2>TOR · Run Engine</h2>
+    <pre id="run"></pre>
+</div>
+
+<div class="block">
+    <h2>STATION · LIVE</h2>
+    <pre id="live"></pre>
+</div>
+
+<div class="block">
+    <h2>HDF · TMP Resolver</h2>
     <pre id="resolver"></pre>
 </div>
 
-<div class="block">
-    <div class="title">TMP‑Knotenpunkt</div>
-    <pre id="tmp"></pre>
-</div>
+<script type="module">
 
-<script>
-(async function () {
+import { GEOM } from "../SLIDE/geom.js";
+import { TRANSFORM_12e_6e_6d_12e } from "../SLIDE/transform.js";
+import VEC from "../TOR/VEC.tor";
+import { TORrespo } from "../TOR/TOR.respo.js";
+import { VERIFY } from "../TOR/VERIFY.js";
+import { VectorRun } from "../TOR/Vector.run.js";
+import { LIVE_CORE } from "../STATION/live-core.js";
+import { LIVE_PULSE } from "../STATION/live-pulse.js";
+import { LIVE_SYNC } from "../STATION/live-sync.js";
+import { LIVE_ROUTER } from "../STATION/live-router.js";
+import { LIVE_WEBSOCKET } from "../STATION/live-websocket.js";
 
-    /* 81.room laden */
-    const matrix = await fetch("81.room").then(r => r.text()).catch(() => "Fehler");
-    document.getElementById("matrix").innerText = matrix;
+async function load(path) {
+    return await fetch(path).then(r => r.text());
+}
 
-    /* TMP‑Liste laden */
-    const tmpList = await fetch("tmp.list.json").then(r => r.json()).catch(() => []);
-    document.getElementById("tmp").innerText = JSON.stringify(tmpList, null, 2);
+document.getElementById("room81").innerText = await load("./81.room");
+document.getElementById("room9").innerText = await load("./9.room");
+document.getElementById("commands").innerText = await load("./COMMANDS.room");
+document.getElementById("one").innerText = await load("./one.room");
 
-    /* Resolver ausführen */
-    const results = [];
-    for (const file of tmpList) {
-        const content = await fetch("../tmp/" + file).then(r => r.text()).catch(() => "");
-        const res = await TMP_HDF_RESOLVER.resolve(file, content);
-        results.push(res);
-    }
+const t = TRANSFORM_12e_6e_6d_12e(12);
+const geom = GEOM(t.sixD.x, t.sixD.y, t.sixD.z);
 
-    document.getElementById("resolver").innerText =
-        JSON.stringify(results, null, 2);
+document.getElementById("geom").innerText = JSON.stringify(geom, null, 2);
+document.getElementById("slide").innerText = JSON.stringify(t, null, 2);
 
-})();
+const vec = VEC;
+const respo = new TORrespo();
+const verify = new VERIFY();
+const run = new VectorRun();
+
+document.getElementById("vec").innerText = JSON.stringify(vec, null, 2);
+document.getElementById("respo").innerText = JSON.stringify(respo, null, 2);
+document.getElementById("verify").innerText = JSON.stringify(verify, null, 2);
+document.getElementById("run").innerText = JSON.stringify(run, null, 2);
+
+const live = {
+    core: new LIVE_CORE(),
+    pulse: new LIVE_PULSE(),
+    sync: new LIVE_SYNC(),
+    router: new LIVE_ROUTER(),
+    websocket: new LIVE_WEBSOCKET()
+};
+
+document.getElementById("live").innerText = JSON.stringify(live, null, 2);
+
+const tmpList = ["tmp1.txt","tmp2.txt","tmp3.txt"];
+const results = [];
+
+for (const file of tmpList) {
+    const content = "";
+    const res = await TMP_HDF_RESOLVER.resolve(file, content);
+    results.push(res);
+}
+
+document.getElementById("resolver").innerText = JSON.stringify(results, null, 2);
+
 </script>
 
 </body>
