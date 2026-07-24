@@ -2,13 +2,13 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<title>HDF · ROOT INDEX · iki1uc</title>
+<title>HDF · ASCII · GEO · AMIGA · GTA‑6</title>
 
 <style>
-    body { background:#0a0a0a; color:#e0e0e0; font-family:Consolas, monospace; padding:20px; }
-    h1 { color:#00e0ff; }
-    .block { background:#111; padding:15px; border-left:4px solid #00e0ff; margin-bottom:20px; }
-    pre { white-space:pre-wrap; }
+    body { background:#000; color:#0f0; font-family:Consolas, monospace; padding:20px; }
+    h1 { color:#ff00ff; text-shadow:0 0 10px #ff00ff; }
+    .block { background:#111; padding:15px; border-left:4px solid #ff00ff; margin-bottom:20px; }
+    pre { white-space:pre-wrap; background:#000; padding:12px; border-left:3px solid #00e0ff; }
 </style>
 
 <script type="module" src="../SLIDE/geom.js"></script>
@@ -29,7 +29,27 @@
 
 <body>
 
-<h1>HDF · ROOT INDEX</h1>
+<h1>HDF · ASCII · GEO · AMIGA · GTA‑6</h1>
+
+<div class="block">
+    <h2>ASCII · GEO‑3D</h2>
+    <pre id="geo3d"></pre>
+</div>
+
+<div class="block">
+    <h2>AMIGA‑SCENE</h2>
+    <pre id="amiga"></pre>
+</div>
+
+<div class="block">
+    <h2>WARP‑TUNNEL</h2>
+    <pre id="warp"></pre>
+</div>
+
+<div class="block">
+    <h2>GTA‑6 · ASCII‑LIVE</h2>
+    <pre id="gta"></pre>
+</div>
 
 <div class="block">
     <h2>HDF · 81.room</h2>
@@ -52,106 +72,9 @@
 </div>
 
 <div class="block">
-    <h2>Geometrie</h2>
-    <pre id="geom"></pre>
-</div>
-
-<div class="block">
-    <h2>SLIDE · Engine</h2>
-    <pre id="slide"></pre>
-</div>
-
-<div class="block">
     <h2>TOR · Vector Engine</h2>
     <pre id="vec"></pre>
 </div>
 
 <div class="block">
-    <h2>TOR · Respo</h2>
-    <pre id="respo"></pre>
-</div>
-
-<div class="block">
-    <h2>TOR · Verify</h2>
-    <pre id="verify"></pre>
-</div>
-
-<div class="block">
-    <h2>TOR · Run Engine</h2>
-    <pre id="run"></pre>
-</div>
-
-<div class="block">
     <h2>STATION · LIVE</h2>
-    <pre id="live"></pre>
-</div>
-
-<div class="block">
-    <h2>HDF · TMP Resolver</h2>
-    <pre id="resolver"></pre>
-</div>
-
-<script type="module">
-
-import { GEOM } from "../SLIDE/geom.js";
-import { TRANSFORM_12e_6e_6d_12e } from "../SLIDE/transform.js";
-import VEC from "../TOR/VEC.tor";
-import { TORrespo } from "../TOR/TOR.respo.js";
-import { VERIFY } from "../TOR/VERIFY.js";
-import { VectorRun } from "../TOR/Vector.run.js";
-import { LIVE_CORE } from "../STATION/live-core.js";
-import { LIVE_PULSE } from "../STATION/live-pulse.js";
-import { LIVE_SYNC } from "../STATION/live-sync.js";
-import { LIVE_ROUTER } from "../STATION/live-router.js";
-import { LIVE_WEBSOCKET } from "../STATION/live-websocket.js";
-
-async function load(path) {
-    return await fetch(path).then(r => r.text());
-}
-
-document.getElementById("room81").innerText = await load("./81.room");
-document.getElementById("room9").innerText = await load("./9.room");
-document.getElementById("commands").innerText = await load("./COMMANDS.room");
-document.getElementById("one").innerText = await load("./one.room");
-
-const t = TRANSFORM_12e_6e_6d_12e(12);
-const geom = GEOM(t.sixD.x, t.sixD.y, t.sixD.z);
-
-document.getElementById("geom").innerText = JSON.stringify(geom, null, 2);
-document.getElementById("slide").innerText = JSON.stringify(t, null, 2);
-
-const vec = VEC;
-const respo = new TORrespo();
-const verify = new VERIFY();
-const run = new VectorRun();
-
-document.getElementById("vec").innerText = JSON.stringify(vec, null, 2);
-document.getElementById("respo").innerText = JSON.stringify(respo, null, 2);
-document.getElementById("verify").innerText = JSON.stringify(verify, null, 2);
-document.getElementById("run").innerText = JSON.stringify(run, null, 2);
-
-const live = {
-    core: new LIVE_CORE(),
-    pulse: new LIVE_PULSE(),
-    sync: new LIVE_SYNC(),
-    router: new LIVE_ROUTER(),
-    websocket: new LIVE_WEBSOCKET()
-};
-
-document.getElementById("live").innerText = JSON.stringify(live, null, 2);
-
-const tmpList = ["tmp1.txt","tmp2.txt","tmp3.txt"];
-const results = [];
-
-for (const file of tmpList) {
-    const content = "";
-    const res = await TMP_HDF_RESOLVER.resolve(file, content);
-    results.push(res);
-}
-
-document.getElementById("resolver").innerText = JSON.stringify(results, null, 2);
-
-</script>
-
-</body>
-</html>
