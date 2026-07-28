@@ -1,89 +1,9 @@
-d1: TMP.a
-d2: TMP.e
-d3: TMP.i
-d4: TMP.n
-d5: TMP.o
-d6: TMP.r
-d7: TMP.s
-d8: TMP.u
-d9: TMP.w
-
-e1: TMP.a
-e2: TMP.e
-e3: TMP.i
-e4: TMP.n
-e5: TMP.o
-e6: TMP.r
-e7: TMP.s
-e8: TMP.u
-e9: TMP.w
-
-i1: TMP.a
-i2: TMP.e
-i3: TMP.i
-i4: TMP.n
-i5: TMP.o
-i6: TMP.r
-i7: TMP.s
-i8: TMP.u
-i9: TMP.w
-
-n1: TMP.a
-n2: TMP.e
-n3: TMP.i
-n4: TMP.n
-n5: TMP.o
-n6: TMP.r
-n7: TMP.s
-n8: TMP.u
-n9: TMP.w
-
-o1: TMP.a
-o2: TMP.e
-o3: TMP.i
-o4: TMP.n
-o5: TMP.o
-o6: TMP.r
-o7: TMP.s
-o8: TMP.u
-o9: TMP.w
-
-r1: TMP.a
-r2: TMP.e
-r3: TMP.i
-r4: TMP.n
-r5: TMP.o
-r6: TMP.r
-r7: TMP.s
-r8: TMP.u
-r9: TMP.w
-
-s1: TMP.a
-s2: TMP.e
-s3: TMP.i
-s4: TMP.n
-s5: TMP.o
-s6: TMP.r
-s7: TMP.s
-s8: TMP.u
-s9: TMP.w
-
-u1: TMP.a
-u2: TMP.e
-u3: TMP.i
-u4: TMP.n
-u5: TMP.o
-u6: TMP.r
-u7: TMP.s
-u8: TMP.u
-u9: TMP.w
-
-w1: TMP.a
-w2: TMP.e
-w3: TMP.i
-w4: TMP.n
-w5: TMP.o
-w6: TMP.r
-w7: TMP.s
-w8: TMP.u
-w9: TMP.w
+d1 d2 d3 d4 d5 d6 d7 d8 d9
+e1 e2 e3 e4 e5 e6 e7 e8 e9
+i1 i2 i3 i4 i5 i6 i7 i8 i9
+n1 n2 n3 n4 n5 n6 n7 n8 n9
+o1 o2 o3 o4 o5 o6 o7 o8 o9
+r1 r2 r3 r4 r5 r6 r7 r8 r9
+s1 s2 s3 s4 s5 s6 s7 s8 s9
+u1 u2 u3 u4 u5 u6 u7 u8 u9
+w1 w2 w3 w4 w5 w6 w7 w8 w9
