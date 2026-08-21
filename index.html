@@ -2,79 +2,499 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<title>HDF · ASCII · GEO · AMIGA · GTA‑6</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HDF · OPERATIONSACHSE · 81 · RESOLVER · LIVE</title>
 
 <style>
-    body { background:#000; color:#0f0; font-family:Consolas, monospace; padding:20px; }
-    h1 { color:#ff00ff; text-shadow:0 0 10px #ff00ff; }
-    .block { background:#111; padding:15px; border-left:4px solid #ff00ff; margin-bottom:20px; }
-    pre { white-space:pre-wrap; background:#000; padding:12px; border-left:3px solid #00e0ff; }
+  :root {
+    --bg: #0a0a12;
+    --fg: #0f0;
+    --hdf: #ffaa00;
+    --tmp: #4af;
+    --resolver: #f4f;
+    --room: #4f4;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: 'Consolas', monospace;
+    padding: 20px;
+    min-height: 100vh;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    gap: 8px;
+  }
+
+  header {
+    border-bottom: 2px solid var(--hdf);
+    padding-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  header h1 {
+    font-size: 18px;
+    background: linear-gradient(90deg, var(--hdf), var(--tmp), var(--resolver));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  main {
+    display: grid;
+    grid-template-columns: 3fr 2fr;
+    gap: 8px;
+    min-height: 500px;
+  }
+  @media (max-width: 900px) { main { grid-template-columns: 1fr; } }
+
+  .panel {
+    background: #05050a;
+    border: 1px solid #1a1a2a;
+    border-radius: 8px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+  }
+  .panel .header {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 4px;
+    border-bottom: 1px solid #1a1a2a;
+  }
+  .panel .header h3 { font-size: 12px; }
+  .panel .header span { font-size: 10px; color: #666; }
+
+  /* ─── 81-MATRIX ──────────────────────────────────────────── */
+  .matrix81 {
+    display: grid;
+    grid-template-columns: repeat(9, 1fr);
+    gap: 2px;
+    margin-top: 10px;
+  }
+  .cell81 {
+    background: #0a0a12;
+    border: 1px solid #1a1a2a;
+    padding: 2px 1px;
+    text-align: center;
+    font-size: 7px;
+    color: #6a8a8a;
+    border-radius: 2px;
+    transition: all 0.3s;
+    cursor: pointer;
+  }
+  .cell81:hover { border-color: var(--hdf); }
+  .cell81 .id { color: var(--tmp); font-weight: bold; }
+  .cell81 .cmd { color: var(--hdf); }
+  .cell81 .status { font-size: 5px; color: #444; }
+
+  /* ─── COMMANDS ───────────────────────────────────────────── */
+  .cmd-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 4px;
+    margin-top: 10px;
+  }
+  .cmd-item {
+    background: #0a0a12;
+    border: 1px solid #1a1a2a;
+    padding: 4px 6px;
+    border-radius: 4px;
+    text-align: center;
+    font-size: 9px;
+  }
+  .cmd-item .key { color: var(--hdf); font-weight: bold; }
+  .cmd-item .target { color: var(--tmp); }
+
+  /* ─── LOG ─────────────────────────────────────────────────── */
+  #log {
+    flex: 1;
+    overflow-y: auto;
+    font-size: 8px;
+    color: #6a6a8a;
+    line-height: 1.3;
+    min-height: 60px;
+    max-height: 120px;
+    background: #06060a;
+    border-radius: 4px;
+    padding: 4px 6px;
+    margin-top: 10px;
+  }
+  #log .entry { padding: 1px 0; border-bottom: 1px solid #0a0a12; }
+  #log .time { color: #444; }
+  #log .msg.hdf { color: var(--hdf); }
+  #log .msg.tmp { color: var(--tmp); }
+  #log .msg.resolver { color: var(--resolver); }
+  #log .msg.ok { color: #4f4; }
+  #log .msg.warn { color: #ff4; }
+
+  button {
+    background: #111;
+    color: var(--fg);
+    border: 1px solid #333;
+    padding: 4px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 9px;
+    transition: 0.2s;
+  }
+  button:hover { background: #1a1a2a; border-color: var(--fg); }
+  button.hdf { border-color: var(--hdf); color: var(--hdf); }
+  button.hdf:hover { background: var(--hdf); color: #000; }
+  button.resolver { border-color: var(--resolver); color: var(--resolver); }
+  button.resolver:hover { background: var(--resolver); color: #000; }
+  button.tmp { border-color: var(--tmp); color: var(--tmp); }
+  button.tmp:hover { background: var(--tmp); color: #000; }
+
+  .controls {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    padding: 4px 0;
+  }
+
+  #resolver-output {
+    background: #0a0a12;
+    border: 1px solid #1a1a2a;
+    border-radius: 4px;
+    padding: 6px;
+    margin-top: 10px;
+    font-size: 8px;
+    color: #8af;
+    white-space: pre-wrap;
+    min-height: 40px;
+  }
 </style>
-
-<script type="module" src="../SLIDE/geom.js"></script>
-<script type="module" src="../SLIDE/transform.js"></script>
-<script type="module" src="../SLIDE/full.js"></script>
-<script type="module" src="../TOR/VEC.tor"></script>
-<script type="module" src="../TOR/TOR.respo.js"></script>
-<script type="module" src="../TOR/VERIFY.js"></script>
-<script type="module" src="../TOR/Vector.run.js"></script>
-<script type="module" src="../STATION/live-core.js"></script>
-<script type="module" src="../STATION/live-pulse.js"></script>
-<script type="module" src="../STATION/live-sync.js"></script>
-<script type="module" src="../STATION/live-router.js"></script>
-<script type="module" src="../STATION/live-websocket.js"></script>
-<script type="module" src="./tmp.hdf.resolver.js"></script>
-
 </head>
-
 <body>
 
-<h1>HDF · ASCII · GEO · AMIGA · GTA‑6</h1>
+<header>
+  <h1>📁 HDF · OPERATIONSACHSE · 81 · RESOLVER · LIVE</h1>
+  <div style="display:flex;align-items:center;gap:10px;">
+    <span id="status-led" style="color:var(--hdf);">●</span>
+    <span id="clock" style="font-size:11px;color:#666;">⏱️ --:--:--</span>
+    <span id="cycle-count" style="font-size:10px;color:#444;">HDF 0</span>
+  </div>
+</header>
 
-<div class="block">
-    <h2>ASCII · GEO‑3D</h2>
-    <pre id="geo3d"></pre>
-</div>
+<main>
+  <!-- 81-MATRIX -->
+  <div class="panel">
+    <div class="header">
+      <h3 style="color:var(--hdf);">📊 81-MATRIX · d1–w9</h3>
+      <span id="stats">81 Zellen · 9×9</span>
+    </div>
+    <div class="matrix81" id="matrix81"></div>
 
-<div class="block">
-    <h2>AMIGA‑SCENE</h2>
-    <pre id="amiga"></pre>
-</div>
+    <!-- COMMANDS -->
+    <div style="margin-top:10px;">
+      <div style="font-size:9px;color:#666;margin-bottom:4px;">⌨️ COMMANDS.room · 9 Hauptbefehle</div>
+      <div class="cmd-grid" id="cmdGrid"></div>
+    </div>
 
-<div class="block">
-    <h2>WARP‑TUNNEL</h2>
-    <pre id="warp"></pre>
-</div>
+    <div id="log">
+      <div class="entry"><span class="time">[INIT]</span> <span class="msg hdf">📁 HDF · Operationsachse geladen</span></div>
+      <div class="entry"><span class="time">[INIT]</span> <span class="msg tmp">📊 81-Matrix · d1–w9</span></div>
+      <div class="entry"><span class="time">[INIT]</span> <span class="msg resolver">⚙️ tmp.hdf.resolver.js · bereit</span></div>
+    </div>
+  </div>
 
-<div class="block">
-    <h2>GTA‑6 · ASCII‑LIVE</h2>
-    <pre id="gta"></pre>
-</div>
+  <!-- RESOLVER + COMMANDS -->
+  <div class="panel">
+    <div class="header">
+      <h3 style="color:var(--resolver);">⚙️ RESOLVER · HDF-Pipeline</h3>
+      <span id="engine-status">● bereit</span>
+    </div>
 
-<div class="block">
-    <h2>HDF · 81.room</h2>
-    <pre id="room81"></pre>
-</div>
+    <div style="margin-top:10px;">
+      <div style="font-size:9px;color:#666;margin-bottom:4px;">📋 one.room · Aufträge</div>
+      <pre id="oneRoom" style="background:#0a0a12;padding:6px;border-radius:4px;font-size:8px;color:#8af;white-space:pre-wrap;min-height:40px;"></pre>
+    </div>
 
-<div class="block">
-    <h2>HDF · 9.room</h2>
-    <pre id="room9"></pre>
-</div>
+    <div id="resolver-output">
+      ⚙️ Resolver bereit · warte auf Auftrag
+    </div>
 
-<div class="block">
-    <h2>HDF · COMMANDS.room</h2>
-    <pre id="commands"></pre>
-</div>
+    <div class="controls">
+      <button class="hdf" id="btnResolve">⚙️ RESOLVE</button>
+      <button class="tmp" id="btnSlide">📐 SLIDE</button>
+      <button class="resolver" id="btnHdfRespo">📊 HDFRESPO</button>
+      <button class="hdf" id="btnID">🆔 ID</button>
+      <button id="btnReset">⟲ RESET</button>
+      <button id="btnAuto">▶ AUTO</button>
+    </div>
+  </div>
+</main>
 
-<div class="block">
-    <h2>HDF · one.room</h2>
-    <pre id="one"></pre>
-</div>
+<script>
+// ============================================================
+// HDF · OPERATIONSACHSE · 81 · RESOLVER · LIVE
+// ============================================================
 
-<div class="block">
-    <h2>TOR · Vector Engine</h2>
-    <pre id="vec"></pre>
-</div>
+// ─── COMMANDS.room ──────────────────────────────────────────
+const COMMANDS = {
+  d: { cmd: 'd', tmp: 'TMP.1', desc: 'Erste Basis' },
+  e: { cmd: 'e', tmp: 'TMP.2', desc: 'Zweite Basis' },
+  i: { cmd: 'i', tmp: 'TMP.3', desc: 'Dritte Basis' },
+  n: { cmd: 'n', tmp: 'TMP.4', desc: 'Vierte Basis' },
+  o: { cmd: 'o', tmp: 'TMP.5', desc: 'Fünfte Basis' },
+  r: { cmd: 'r', tmp: 'TMP.6', desc: 'Sechste Basis' },
+  s: { cmd: 's', tmp: 'TMP.7', desc: 'Siebte Basis' },
+  u: { cmd: 'u', tmp: 'TMP.8', desc: 'Achte Basis' },
+  w: { cmd: 'w', tmp: 'TMP.9', desc: 'Neunte Basis' }
+};
 
-<div class="block">
-    <h2>STATION · LIVE</h2>
+const COMMAND_KEYS = ['d', 'e', 'i', 'n', 'o', 'r', 's', 'u', 'w'];
+
+// ─── ONE.ROOM ───────────────────────────────────────────────
+const ONE_ROOM = [
+  { id: '#SLIDE', target: 'SLIDE.hdf', dir: '/SLIDE/HDF/' },
+  { id: '#HDFRESPO', target: 'HDFRESPO.hdf', dir: '/HDF/respo/' },
+  { id: '#ID', target: 'ID.hdf', dir: '/SLIDE/ID/' }
+];
+
+// ─── STATE ───────────────────────────────────────────────────
+const state = {
+  matrix: [],
+  commands: COMMANDS,
+  oneRoom: ONE_ROOM,
+  resolver: null,
+  hdfCount: 0,
+  autoMode: false
+};
+
+// ─── DOM ─────────────────────────────────────────────────────
+const matrixEl = document.getElementById('matrix81');
+const cmdGridEl = document.getElementById('cmdGrid');
+const oneRoomEl = document.getElementById('oneRoom');
+const resolverOutput = document.getElementById('resolver-output');
+const logDiv = document.getElementById('log');
+
+function log(msg, type = 'info') {
+  const entry = document.createElement('div');
+  entry.className = 'entry';
+  const time = new Date().toLocaleTimeString();
+  const cls = type === 'hdf' ? 'hdf' : type === 'tmp' ? 'tmp' :
+              type === 'resolver' ? 'resolver' : type === 'ok' ? 'ok' :
+              type === 'warn' ? 'warn' : '';
+  entry.innerHTML = `<span class="time">[${time}]</span> <span class="msg ${cls}">${msg}</span>`;
+  logDiv.appendChild(entry);
+  logDiv.scrollTop = logDiv.scrollHeight;
+  while (logDiv.children.length > 50) logDiv.removeChild(logDiv.firstChild);
+}
+
+// ─── 81-MATRIX ──────────────────────────────────────────────
+function build81Matrix() {
+  const matrix = [];
+  const keys = ['d', 'e', 'i', 'n', 'o', 'r', 's', 'u', 'w'];
+  for (let r = 0; r < 9; r++) {
+    const row = [];
+    for (let c = 0; c < 9; c++) {
+      const cmd = keys[r];
+      const num = c + 1;
+      const id = `${cmd}${num}`;
+      const tmp = `TMP.${r + 1}.${num}`;
+      row.push({
+        id,
+        cmd,
+        num,
+        tmp,
+        status: 'aktiv'
+      });
+    }
+    matrix.push(row);
+  }
+  return matrix;
+}
+
+function render81Matrix() {
+  matrixEl.innerHTML = '';
+  state.matrix.forEach(row => {
+    row.forEach(cell => {
+      const div = document.createElement('div');
+      div.className = 'cell81';
+      div.innerHTML = `
+        <span class="id">${cell.id}</span><br>
+        <span class="cmd">→</span><br>
+        <span class="status">${cell.tmp}</span>
+      `;
+      div.title = `${cell.id} → ${cell.tmp}`;
+      div.addEventListener('click', () => {
+        resolverOutput.textContent = `📊 ${cell.id} → ${cell.tmp} · Status: ${cell.status}`;
+        log(`📊 ${cell.id} → ${cell.tmp}`, 'tmp');
+      });
+      matrixEl.appendChild(div);
+    });
+  });
+}
+
+// ─── COMMANDS ──────────────────────────────────────────────
+function renderCommands() {
+  cmdGridEl.innerHTML = '';
+  COMMAND_KEYS.forEach(key => {
+    const cmd = COMMANDS[key];
+    const div = document.createElement('div');
+    div.className = 'cmd-item';
+    div.innerHTML = `
+      <span class="key">${cmd.cmd}</span>
+      <span class="target">→ ${cmd.tmp}</span>
+      <div style="font-size:6px;color:#444;">${cmd.desc}</div>
+    `;
+    div.addEventListener('click', () => {
+      resolverOutput.textContent = `⌨️ ${cmd.cmd} → ${cmd.tmp} · ${cmd.desc}`;
+      log(`⌨️ ${cmd.cmd} → ${cmd.tmp}`, 'hdf');
+    });
+    cmdGridEl.appendChild(div);
+  });
+}
+
+// ─── ONE.ROOM ──────────────────────────────────────────────
+function renderOneRoom() {
+  oneRoomEl.textContent = ONE_ROOM.map(item =>
+    `${item.id} → ${item.target} (${item.dir})`
+  ).join('\n');
+}
+
+// ─── RESOLVER ──────────────────────────────────────────────
+function resolve(target) {
+  state.hdfCount++;
+  const found = ONE_ROOM.find(item => item.id === target);
+  if (found) {
+    resolverOutput.textContent = `
+⚙️ RESOLVER · ${target}
+📁 Ziel: ${found.target}
+📂 Verzeichnis: ${found.dir}
+✅ Status: VERARBEITET
+🔄 HDF-Count: ${state.hdfCount}
+    `;
+    log(`⚙️ ${target} → ${found.target} (${found.dir})`, 'resolver');
+    return { success: true, target, found };
+  } else {
+    resolverOutput.textContent = `
+❌ RESOLVER · ${target}
+📁 Ziel nicht gefunden
+❌ Status: FEHLER
+    `;
+    log(`❌ ${target} nicht gefunden`, 'warn');
+    return { success: false, target };
+  }
+}
+
+// ─── SLIDE ──────────────────────────────────────────────────
+function slide() {
+  const result = resolve('#SLIDE');
+  if (result.success) {
+    // Simuliere SLIDE-Verarbeitung
+    setTimeout(() => {
+      resolverOutput.textContent += `\n📐 SLIDE.hdf → verarbeitet · ${result.found.dir}`;
+      log('📐 SLIDE.hdf verarbeitet', 'tmp');
+    }, 300);
+  }
+}
+
+// ─── HDFRESPO ──────────────────────────────────────────────
+function hdfRespo() {
+  const result = resolve('#HDFRESPO');
+  if (result.success) {
+    setTimeout(() => {
+      resolverOutput.textContent += `\n📊 HDFRESPO.hdf → verarbeitet · ${result.found.dir}`;
+      log('📊 HDFRESPO.hdf verarbeitet', 'resolver');
+    }, 300);
+  }
+}
+
+// ─── ID ─────────────────────────────────────────────────────
+function idCommand() {
+  const result = resolve('#ID');
+  if (result.success) {
+    setTimeout(() => {
+      resolverOutput.textContent += `\n🆔 ID.hdf → verarbeitet · ${result.found.dir}`;
+      log('🆔 ID.hdf verarbeitet', 'hdf');
+    }, 300);
+  }
+}
+
+// ─── AUTO ──────────────────────────────────────────────────
+let autoInterval = null;
+
+function toggleAuto() {
+  if (autoInterval) {
+    clearInterval(autoInterval);
+    autoInterval = null;
+    document.getElementById('btnAuto').textContent = '▶ AUTO';
+    log('⏸ AUTO pausiert', 'warn');
+    return;
+  }
+  autoInterval = setInterval(() => {
+    const targets = ['#SLIDE', '#HDFRESPO', '#ID'];
+    const target = targets[Math.floor(Math.random() * targets.length)];
+    if (target === '#SLIDE') slide();
+    else if (target === '#HDFRESPO') hdfRespo();
+    else idCommand();
+    document.getElementById('cycle-count').textContent = `HDF ${state.hdfCount}`;
+  }, 2000);
+  document.getElementById('btnAuto').textContent = '⏸ STOP';
+  log('▶ AUTO aktiviert', 'ok');
+}
+
+// ─── RESET ──────────────────────────────────────────────────
+function resetHDF() {
+  if (autoInterval) {
+    clearInterval(autoInterval);
+    autoInterval = null;
+    document.getElementById('btnAuto').textContent = '▶ AUTO';
+  }
+  state.hdfCount = 0;
+  state.matrix = build81Matrix();
+  render81Matrix();
+  resolverOutput.textContent = '⚙️ Resolver zurückgesetzt · bereit';
+  document.getElementById('cycle-count').textContent = 'HDF 0';
+  log('⟲ HDF zurückgesetzt', 'warn');
+}
+
+// ─── UHR ──────────────────────────────────────────────────
+function updateClock() {
+  document.getElementById('clock').textContent = `⏱️ ${new Date().toLocaleTimeString()}`;
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// ─── EVENTS ──────────────────────────────────────────────────
+document.getElementById('btnResolve').addEventListener('click', () => {
+  const target = prompt('Auftrag eingeben: #SLIDE, #HDFRESPO, #ID');
+  if (target) resolve(target);
+});
+document.getElementById('btnSlide').addEventListener('click', slide);
+document.getElementById('btnHdfRespo').addEventListener('click', hdfRespo);
+document.getElementById('btnID').addEventListener('click', idCommand);
+document.getElementById('btnReset').addEventListener('click', resetHDF);
+document.getElementById('btnAuto').addEventListener('click', toggleAuto);
+
+// ─── TASTATUR ──────────────────────────────────────────────────
+document.addEventListener('keydown', (e) => {
+  if (e.key === '1') slide();
+  if (e.key === '2') hdfRespo();
+  if (e.key === '3') idCommand();
+  if (e.key === 'r') resetHDF();
+  if (e.key === 'a') toggleAuto();
+  if (e.key === ' ') { e.preventDefault(); document.getElementById('btnResolve').click(); }
+});
+
+// ─── INIT ──────────────────────────────────────────────────
+state.matrix = build81Matrix();
+render81Matrix();
+renderCommands();
+renderOneRoom();
+resolverOutput.textContent = '⚙️ HDF-Resolver bereit · 81-Matrix geladen · COMMANDS.room aktiv';
+
+log('📁 HDF · Operationsachse aktiv', 'hdf');
+log('📊 81-Matrix · d1–w9 geladen', 'tmp');
+log('⚙️ tmp.hdf.resolver.js · bereit', 'resolver');
+log('⌨️  1=SLIDE  2=HDFRESPO  3=ID  r=Reset  a=Auto  Leertaste=Resolve', 'warn');
+</script>
+
+</body>
+</html>
